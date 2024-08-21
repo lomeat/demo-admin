@@ -37,24 +37,37 @@ const currencies: Currency[] = [
   },
 ];
 
-const dataSource: TableProps["dataSource"] = Array.from(
-  { length: 50 },
-  (_, i) => ({
-    id: i,
-    title: `Супер бонус №${i + 1}`,
-    currency: currencies[Math.floor(Math.random() * 3)]?.title,
-    percent: 150 + i,
-    mindep: 100 + i,
-    maxdep: 10000 + i * 100,
-    wager: 10 + i,
-    idle: [12, 100],
-    playing: [2, 16],
-    finished: [3, 25],
-    loosed: [2, 16],
-    expired: [5, 41],
-    tag: "MichaelBirthday",
-  })
-);
+const dataSource = Array.from({ length: 50 }, (_, i) => ({
+  id: i,
+  title: `Супер бонус №${i + 1}`,
+  currency: currencies[Math.floor(Math.random() * 3)]?.title,
+  percent: 150 + i,
+  mindep: 100 + i,
+  maxdep: 10000 + i * 100,
+  wager: 10 + i,
+  idle: [12, 100],
+  playing: [2, 16],
+  finished: [3, 25],
+  loosed: [2, 16],
+  expired: [5, 41],
+  tag: "MichaelBirthday",
+}));
+
+const bonuesTemplate = {
+  id: 500,
+  title: `Супер бонус №500`,
+  currency: currencies[2].title,
+  percent: 200,
+  mindep: 5000,
+  maxdep: 5000000,
+  wager: 25,
+  idle: [50000, 100],
+  playing: [24567, 49],
+  finished: [13234, 26],
+  loosed: [11111, 22],
+  expired: [1088, 2],
+  tag: "new",
+};
 
 function getSymbol(currency: Currency["title"]) {
   return currencies.find((item) => item.title === currency)?.symbol;
@@ -198,12 +211,15 @@ const columns: TableProps["columns"] = [
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const [data, setData] = useState([...dataSource]);
+
   const showModal = () => {
     setIsModalOpen(true);
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
+    setData([...data, bonuesTemplate]);
   };
 
   const handleCancel = () => {
@@ -234,23 +250,29 @@ export default function Home() {
           >
             <Space>
               <Button type="primary" onClick={showModal}>
-                Open Modal
+                Создать депозитный бонус
               </Button>
               <Modal
                 title="Basic Modal"
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}
+                footer={[
+                  <Button key="back" onClick={handleCancel}>
+                    Отменить
+                  </Button>,
+                  <Button key="submit" type="primary" onClick={handleOk}>
+                    Создать
+                  </Button>,
+                ]}
               >
-                <p>Some contents...</p>
-                <p>Some contents...</p>
-                <p>Some contents...</p>
+                <p>Здесь должна быть форма</p>
               </Modal>
             </Space>
             <Table
               bordered
               size="small"
-              dataSource={dataSource}
+              dataSource={data}
               columns={columns}
               pagination={false}
               scroll={{
