@@ -50,7 +50,7 @@ const dataSource = Array.from({ length: 50 }, (_, i) => ({
   finished: [3, 25],
   loosed: [2, 16],
   expired: [5, 41],
-  tag: "MichaelBirthday",
+  tags: ["player", "birthday"],
 }));
 
 const bonuesTemplate = {
@@ -66,7 +66,7 @@ const bonuesTemplate = {
   finished: [13234, 26],
   loosed: [11111, 22],
   expired: [1088, 2],
-  tag: "new",
+  tags: ["new"],
 };
 
 function getSymbol(currency: Currency["title"]) {
@@ -85,8 +85,28 @@ const columns: TableProps["columns"] = [
     onFilter: (value, record) => record.id.startsWith(value as string),
     filterSearch: true,
   },
-  { title: "Тег", dataIndex: "tag", ellipsis: true, width: 120 },
-  { title: "Название", dataIndex: "title", ellipsis: true },
+  {
+    title: "Теги",
+    dataIndex: "tags",
+    ellipsis: true,
+    width: "10%",
+    render: (a) => (
+      <Flex gap={8}>
+        {a.map((item: any) => (
+          <div
+            style={{
+              padding: "0 4px",
+              border: "1px solid gray",
+              fontSize: 12,
+            }}
+          >
+            {item}
+          </div>
+        ))}
+      </Flex>
+    ),
+  },
+  { title: "Название", dataIndex: "title", ellipsis: true, width: "20%" },
   { title: "Валюта", dataIndex: "currency", width: 80 },
   {
     title: "Бонус",
@@ -139,7 +159,7 @@ const columns: TableProps["columns"] = [
         width: 100,
         dataIndex: "idle",
         render: (a) => (
-          <Flex vertical={true}>
+          <Flex justify="space-between">
             <span>{a[0]}</span>
             <span>{a[1]}%</span>
           </Flex>
@@ -150,7 +170,7 @@ const columns: TableProps["columns"] = [
         width: 100,
         dataIndex: "playing",
         render: (a) => (
-          <Flex vertical={true}>
+          <Flex justify="space-between">
             <span>{a[0]}</span>
             <span>{a[1]}%</span>
           </Flex>
@@ -161,7 +181,7 @@ const columns: TableProps["columns"] = [
         width: 100,
         dataIndex: "finished",
         render: (a) => (
-          <Flex vertical={true}>
+          <Flex justify="space-between">
             <span>{a[0]}</span>
             <span>{a[1]}%</span>
           </Flex>
@@ -172,7 +192,7 @@ const columns: TableProps["columns"] = [
         width: 100,
         dataIndex: "loosed",
         render: (a) => (
-          <Flex vertical={true}>
+          <Flex justify="space-between">
             <span>{a[0]}</span>
             <span>{a[1]}%</span>
           </Flex>
@@ -183,7 +203,7 @@ const columns: TableProps["columns"] = [
         width: 110,
         dataIndex: "expired",
         render: (a) => (
-          <Flex vertical={true}>
+          <Flex justify="space-between">
             <span>{a[0]}</span>
             <span>{a[1]}%</span>
           </Flex>
