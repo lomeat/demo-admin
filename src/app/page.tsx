@@ -19,6 +19,46 @@ const GlobalStyle = createGlobalStyle`
 
 const { Content, Sider } = Layout;
 
+// API
+type ResponseStatus = {
+  status: "success" | "error" | "pending";
+  message: string;
+};
+
+type Maybe<T> = T | null;
+
+type GetDepBonusesReq = {};
+type GetDepBonusesRes = Array<DepBonus>;
+
+type GetDepBonusReq = { id: DepBonus["id"] };
+type GetDepBonusRes = DepBonus;
+
+type PostDepBonusReq = DepBonusDetails;
+type PostDepBonusRes = ResponseStatus;
+
+class API {
+  public async get<Req, Res>(
+    url: string,
+    body: Req & BodyInit
+  ): Promise<Maybe<Res>> {
+    try {
+      const res = await fetch(`api-string/${url}`, { body, method: "GET" });
+
+      return res as Res;
+    } catch (err) {
+      return null;
+    }
+  }
+}
+
+function getBonuses(): GetDepBonusesRes {
+  return depTableSource;
+}
+
+function getBonus(body: GetDepBonusReq): GetDepBonusRes {
+  return depTableSource[0];
+}
+
 // TYPES
 
 type Currency = {
