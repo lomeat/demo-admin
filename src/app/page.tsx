@@ -19,6 +19,101 @@ const GlobalStyle = createGlobalStyle`
 
 const { Content, Sider } = Layout;
 
+// TYPES
+
+type Currency = {
+  id: number;
+  title: string;
+  symbol: string;
+};
+
+type Country = {
+  id: number;
+  title: string;
+  flag?: React.ReactNode;
+};
+
+type Provider = {
+  id: number;
+  title: string;
+  games: Game[];
+};
+
+type Game = {
+  id: number;
+  title: string;
+  image?: string;
+};
+
+type Bonus = {
+  id: number;
+  title: string;
+  currency: Currency;
+  status: {
+    all: [number, number];
+    playing: [number, number];
+    finished: [number, number];
+    loosed: [number, number];
+    expired: [number, number];
+  };
+  tags: string[];
+  country: Country;
+};
+
+type DepBonus = Bonus & {
+  percent: number;
+  minDep: number;
+  maxDep: number;
+  wager: number;
+};
+
+type NodepBonus = Bonus & {
+  amount: number;
+  wager: number;
+  wagerResult: number;
+};
+
+type FsBonus = Bonus & {
+  lines: number;
+  spins: number;
+  wager: number;
+  bet?: number;
+  minDep?: number;
+};
+
+type BonusDetails = Bonus & {
+  image: FormData | string;
+  desc?: string;
+  games: Game[];
+  maxResult?: number;
+  maxBet?: number;
+  maxWagerAmount?: number;
+  maxWagerKoeff?: number;
+  lifetime: number;
+  burntime: number;
+};
+
+type DepBonusDetails = BonusDetails & DepBonus;
+
+type NoDepBonusDetails = BonusDetails & NodepBonus;
+
+type FsDepBonusDetails = BonusDetails & FsBonus;
+
+// DATA
+
+const providers: Provider[] = Array.from({ length: 3 }, (_, i) => ({
+  id: i,
+  title: `Provider ${i + 1}`,
+  games: generateGames(i + 1),
+}));
+
+function generateGames(koeff: number): Game[] {
+  return Array.from({ length: 10 }, (_, i) => ({
+    id: i,
+    title: `Game ${(i + 1) * koeff}`,
+  }));
+}
+
 const currencies: Currency[] = [
   {
     id: 1,
@@ -36,6 +131,76 @@ const currencies: Currency[] = [
     symbol: "₽",
   },
 ];
+
+const countries = [
+  {
+    id: 0,
+    title: "Украина",
+  },
+  {
+    id: 0,
+    title: "Румыния",
+  },
+  {
+    id: 0,
+    title: "Казахстан",
+  },
+];
+
+const depTableSource: DepBonus[] = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  title: `Деп бонус №${i + 1}`,
+  currency: currencies[Math.floor(Math.random() * 3)],
+  percent: 150 + i,
+  minDep: 100 + i,
+  maxDep: 10000 + i * 100,
+  wager: 10 + i,
+  status: {
+    all: [12, 100],
+    playing: [2, 16],
+    finished: [3, 25],
+    loosed: [2, 16],
+    expired: [5, 41],
+  },
+  country: countries[Math.floor(Math.random() * 3)],
+  tags: ["player", "birthday"],
+}));
+
+const nodepTableSource: NodepBonus[] = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  title: `Бездеп бонус №${i + 1}`,
+  currency: currencies[Math.floor(Math.random() * 3)],
+  amount: 150 + i,
+  wager: 10 + i,
+  wagerResult: 10000 + i * 100,
+  status: {
+    all: [12, 100],
+    playing: [2, 16],
+    finished: [3, 25],
+    loosed: [2, 16],
+    expired: [5, 41],
+  },
+  country: countries[Math.floor(Math.random() * 3)],
+  tags: ["blogger", "birthday"],
+}));
+
+const fsTableSource: FsBonus[] = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  title: `Фриспин бонус №${i + 1}`,
+  currency: currencies[Math.floor(Math.random() * 3)],
+  spins: 150 + i,
+  lines: 10 + i,
+  wager: 10000 + i * 100,
+  status: {
+    all: [12, 100],
+    playing: [2, 16],
+    finished: [3, 25],
+    loosed: [2, 16],
+    expired: [5, 41],
+  },
+  country: countries[Math.floor(Math.random() * 3)],
+  tags: ["blogger", "player"],
+}));
 
 const dataSource = Array.from({ length: 50 }, (_, i) => ({
   id: i,
@@ -68,13 +233,6 @@ const bonuesTemplate = {
   expired: [1088, 2],
   tags: ["new"],
 };
-
-function getSymbol(currency: Currency["title"]) {
-  return currencies.find((item) => item.title === currency)?.symbol;
-}
-function formatNumber(value: number) {
-  return value.toLocaleString("he");
-}
 
 const columns: TableProps["columns"] = [
   {
@@ -228,6 +386,73 @@ const columns: TableProps["columns"] = [
   },
 ];
 
+const items: MenuProps["items"] = [
+  {
+    key: "sub1",
+    label: "Бонусы",
+    icon: <MailOutlined />,
+    children: [
+      {
+        key: "g1",
+        label: "Депозитный",
+      },
+      {
+        key: "g2",
+        label: "Бездепозитный",
+      },
+      {
+        key: "g3",
+        label: "Фриспины",
+      },
+      {
+        key: "g4",
+        label: "Промокоды",
+      },
+      {
+        key: "g5",
+        label: "Кэшбек",
+      },
+    ],
+  },
+  {
+    key: "sub2",
+    label: "Просто пример",
+    icon: <AppstoreOutlined />,
+    children: [
+      { key: "5", label: "Option 5" },
+      { key: "6", label: "Option 6" },
+      {
+        key: "sub3",
+        label: "Submenu",
+        children: [
+          { key: "7", label: "Option 7" },
+          { key: "8", label: "Option 8" },
+        ],
+      },
+    ],
+  },
+];
+
+const siderStyle: React.CSSProperties = {
+  overflow: "auto",
+  height: "100vh",
+  position: "fixed",
+  insetInlineStart: 0,
+  top: 0,
+  bottom: 0,
+  scrollbarWidth: "thin",
+  scrollbarColor: "unset",
+};
+
+// COMPONENTS
+
+function getSymbol(currency: Currency["title"]) {
+  return currencies.find((item) => item.title === currency)?.symbol;
+}
+function formatNumber(value: number) {
+  return value.toLocaleString("he");
+}
+
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -306,67 +531,3 @@ export default function Home() {
     </>
   );
 }
-
-type Currency = {
-  id: number;
-  title: string;
-  symbol: string;
-};
-
-const items: MenuProps["items"] = [
-  {
-    key: "sub1",
-    label: "Бонусы",
-    icon: <MailOutlined />,
-    children: [
-      {
-        key: "g1",
-        label: "Депозитный",
-      },
-      {
-        key: "g2",
-        label: "Бездепозитный",
-      },
-      {
-        key: "g3",
-        label: "Фриспины",
-      },
-      {
-        key: "g4",
-        label: "Промокоды",
-      },
-      {
-        key: "g5",
-        label: "Кэшбек",
-      },
-    ],
-  },
-  {
-    key: "sub2",
-    label: "Просто пример",
-    icon: <AppstoreOutlined />,
-    children: [
-      { key: "5", label: "Option 5" },
-      { key: "6", label: "Option 6" },
-      {
-        key: "sub3",
-        label: "Submenu",
-        children: [
-          { key: "7", label: "Option 7" },
-          { key: "8", label: "Option 8" },
-        ],
-      },
-    ],
-  },
-];
-
-const siderStyle: React.CSSProperties = {
-  overflow: "auto",
-  height: "100vh",
-  position: "fixed",
-  insetInlineStart: 0,
-  top: 0,
-  bottom: 0,
-  scrollbarWidth: "thin",
-  scrollbarColor: "unset",
-};
